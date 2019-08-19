@@ -30,7 +30,7 @@ let
 
 in {
   config,
-  extraEmacsPackages ? [],
+  extraEmacsPackages ? epkgs: [],
   package ? pkgs.emacs,
   override ? (epkgs: epkgs)
 }: let
@@ -39,4 +39,6 @@ in {
   emacsWithPackages = emacsPackages.emacsWithPackages;
 in emacsWithPackages (epkgs: let
   overriden = override epkgs;
-in builtins.map (name: overriden.${name}) (packages ++ [ "use-package" ] ++ extraEmacsPackages));
+  usePkgs = builtins.map (name: overriden.${name}) packages;
+  extraPkgs = extraEmacsPackages overriden;
+in [ overriden.use-package ] ++ usePkgs ++ extraPkgs)

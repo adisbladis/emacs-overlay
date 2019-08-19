@@ -16,6 +16,7 @@ This package is named =emacsGit= in the overlay.
 
 ** Extra library functionality
 This overlay comes with an extra function to generate an Emacs closure from =use-package= declarations.
+This is an abstraction on top of =emacsWithPackages=.
 #+BEGIN_SRC nix
 {
   environment.systemPackages = [
@@ -23,7 +24,11 @@ This overlay comes with an extra function to generate an Emacs closure from =use
       config = builtins.readFile ./emacs.el;
       # Package is optional, defaults to pkgs.emacs
       package = pkgs.emacsGit;
-      # Overrides are optional
+      # Optionally provide extra packages not in the configuration file
+      extraEmacsPackages = epkgs: [
+        epkgs.cask
+      ];
+      # Optionally override derivations
       override = epkgs: epkgs // {
         weechat = epkgs.melpaPackages.weechat.overrideAttrs(old: {
           patches = [ ./weechat-el.patch ];
